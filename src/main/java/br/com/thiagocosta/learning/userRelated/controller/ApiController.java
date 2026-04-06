@@ -6,11 +6,17 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import br.com.thiagocosta.learning.userRelated.model.UserModel;
 import org.springframework.web.bind.annotation.RequestBody;
+import br.com.thiagocosta.learning.userRelated.repository.IUserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 
 // @Controller Usado para aplicações MVC tradicionais (que retornam Views/HTML como Thymeleaf ou JSP).
 @RestController // Usado para APIs REST (que retornam JSON ou XML). Ele é, na verdade, uma combinação de @Controller + @ResponseBody
 @RequestMapping("/users")
 public class ApiController {
+    
+    @Autowired //Vai gerenciar todo ciclo de vida desse repository(instanciar)
+    private IUserRepository userRepository;
+
     /*
         Método de acesso do HTTP
         GET - Buscar uma informação
@@ -20,8 +26,9 @@ public class ApiController {
         PATCH - Alterar somente uma parte da info/dado
     */
     @PostMapping("/create")
-    public void createUser(@RequestBody UserModel userModel){
-        System.out.println(userModel.getUserName());
+    public UserModel createUser(@RequestBody UserModel userModel){
+        var userCreated = this.userRepository.save(userModel);
+        return userCreated;
     }
 
 }
