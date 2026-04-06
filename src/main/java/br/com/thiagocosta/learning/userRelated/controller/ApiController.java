@@ -27,6 +27,13 @@ public class ApiController {
     */
     @PostMapping("/create")
     public UserModel createUser(@RequestBody UserModel userModel){
+        var user = this.userRepository.findByUserName(userModel.getUserName());
+
+        if(user != null){
+            System.out.println("User already found!");
+            return null;
+        }
+
         var userCreated = this.userRepository.save(userModel);
         return userCreated;
     }

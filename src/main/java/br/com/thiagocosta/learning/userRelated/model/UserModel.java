@@ -23,6 +23,7 @@ public class UserModel {
     private UUID id;
 
     // @Column(name = "...") para caso eu queira mudar o nome do atributo na tabela ao inves de userName
+    // @Column(unique = true) para caso eu queira que o atributo abaixo seja unico no banco de dados
     private String userName;
     private String name;
     private String password;
