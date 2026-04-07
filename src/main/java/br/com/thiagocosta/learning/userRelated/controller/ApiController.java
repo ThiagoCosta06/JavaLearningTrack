@@ -2,6 +2,9 @@ package br.com.thiagocosta.learning.userRelated.controller;
 
 // import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RestController;
+
+import at.favre.lib.crypto.bcrypt.BCrypt;
+
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import br.com.thiagocosta.learning.userRelated.model.UserModel;
@@ -37,6 +40,11 @@ public class ApiController {
             // Status code
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("User already exists");
         }
+
+        var encryptedPassoword = BCrypt.withDefaults().
+        hashToString(12/*"Força, mesmo valor presente na documentação" */, userModel.getPassword().toCharArray());
+        
+        userModel.setPassword(encryptedPassoword);
 
         var userCreated = this.userRepository.save(userModel);
         return ResponseEntity.status(HttpStatus.CREATED).body(userCreated);
