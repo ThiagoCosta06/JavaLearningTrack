@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
-@RequestMapping("/task")
+@RequestMapping("/tasks")
 public class TaskController {
     
     @Autowired
@@ -51,9 +51,16 @@ public class TaskController {
         return ResponseEntity.status(HttpStatus.OK).body(task);
     }
 
-    @GetMapping("/List")
+    @GetMapping("/list")
     public List<TaskModel> ListTask(HttpServletRequest request){
         var taskList = taskRepository.findByIdUser((UUID) request.getAttribute("idUser"));
+
+        return taskList;
+    }
+
+    @GetMapping("/listAll")
+    public List<TaskModel> ListTask(){
+        var taskList = taskRepository.findAll();
 
         return taskList;
     }
@@ -62,16 +69,20 @@ public class TaskController {
     public ResponseEntity updateTask(@PathVariable UUID id, @RequestBody TaskModel taskModel, HttpServletRequest request) {
         var task = this.taskRepository.findById(id).orElse(null);
 
+        System.out.println(task);
+
         if(task == null){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Task not found");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("Task not found through this userId");
         }
 
         if(!task.getIdUser().equals(request.getAttribute("idUser"))){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("This user does not have right to edit this task");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body("User has no authorization to update this task");
         }
 
         Utils.copyNonNullProperties(taskModel, task);
         
-        return ResponseEntity.status(HttpStatus.OK).body(this.taskRepository.save(taskModel));
+        return ResponseEntity.ok().body(this.taskRepository.save(task));
     }
 }
